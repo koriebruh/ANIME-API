@@ -1,0 +1,37 @@
+###
+POST localhost:3000/auth/user/register
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "korie1",
+  "password": "korie123"
+}
+
+
+###
+POST localhost:3000/auth/user/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "korie1",
+  "password": "korie123"
+}
+
+
+###
+GET localhost:3000/auth/user/logout
+Accept: application/json
+Content-Type: application/json
+
+
+###TEST ERRORRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR
+POST localhost:3000/auth/user/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "korie",
+  "password": "korie123SSS"
+}
