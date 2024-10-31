@@ -1,0 +1,38 @@
+### test login dulu
+POST localhost:3000/auth/user/login
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "korie1s",
+  "password": "korie123"
+}
+
+
+
+###
+GET http://localhost:3000/favorites
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJVc2VyTmFtZSI6ImtvcmllMXMiLCJpc3MiOiJraW5nX2phbWFsIiwiZXhwIjoxNzMwMzcyMzk3fQ.KN8lca-qzV3-QH2SBumFlvguuiC03CAAFW7pi_bzKuA
+###
+POST http://localhost:3000/favorites/1
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjo2LCJVc2VyTmFtZSI6ImtvcmllMXMiLCJpc3MiOiJraW5nX2phbWFsIiwiZXhwIjoxNzMwMzcxODE0fQ.0PEEknCL4BCQh09hU7JcRS_xXUwl_0SGn5o87TwlFTI
+
+
+###
+POST http://localhost:3000/favorites/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer
+
+
+###
+DELETE http://localhost:3000/favorites/
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer
+
+###

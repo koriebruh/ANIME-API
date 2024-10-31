@@ -101,7 +101,7 @@ func (service UserServiceImpl) Login(ctx *fiber.Ctx, login dto.UserRequestLogin)
 		Username: login.Username,
 		Password: login.Password,
 	}
-	err = service.userRepository.Login(ctx.Context(), tx, ReqLogin)
+	userID, err := service.userRepository.Login(ctx.Context(), tx, ReqLogin)
 	if err != nil {
 		responses = dto.WebRes{
 			Code:   http.StatusBadRequest,
@@ -110,6 +110,7 @@ func (service UserServiceImpl) Login(ctx *fiber.Ctx, login dto.UserRequestLogin)
 		}
 		return responses
 	}
+
 	err = tx.Commit()
 	if err != nil {
 		responses = dto.WebRes{
@@ -120,16 +121,10 @@ func (service UserServiceImpl) Login(ctx *fiber.Ctx, login dto.UserRequestLogin)
 		return responses
 	}
 
-	//#RESPONSE SUCCESS
-	responses = dto.WebRes{
-		Code:   http.StatusOK,
-		Status: "OK",
-		Data:   "Login Success",
-	}
-
 	//#GENERATE JWT TOKEN
-	expTime := time.Now().Add(time.Minute * 2) // <-- token kadaluarsa dalam 2min
+	expTime := time.Now().Add(time.Minute * 5) // <-- token kadaluarsa dalam 5min
 	claimToken := &cnf.JWTClaim{
+		UserID:   userID,
 		UserName: login.Username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "king_jamal",
@@ -159,6 +154,16 @@ func (service UserServiceImpl) Login(ctx *fiber.Ctx, login dto.UserRequestLogin)
 		HTTPOnly: true,
 	})
 
+	//#RESPONSE SUCCESS
+	responses = dto.WebRes{
+		Code:   http.StatusOK,
+		Status: "OK",
+		Data: map[string]string{
+			"message": "Login Success",
+			"token":   token, // Sertakan token dalam respons jika client membutuhkannya
+		},
+	}
+
 	return responses
 }
 
@@ -174,7 +179,7 @@ func (service UserServiceImpl) Logout(ctx *fiber.Ctx) dto.WebRes {
 	responses := dto.WebRes{
 		Code:   http.StatusOK,
 		Status: "OK",
-		Data:   "Logout Success",
+		Data:   "LogOut Success",
 	}
 
 	return responses

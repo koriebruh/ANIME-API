@@ -40,23 +40,24 @@ func (repo UserRepositoryImpl) Register(ctx context.Context, tx *sql.Tx, user do
 	return nil
 }
 
-func (repo UserRepositoryImpl) Login(ctx context.Context, tx *sql.Tx, user domain.User) error {
+func (repo UserRepositoryImpl) Login(ctx context.Context, tx *sql.Tx, user domain.User) (int, error) {
 	var userLogin domain.User
 
 	QUERY := "SELECT user_id, username, password FROM users WHERE username = ?"
 	err := tx.QueryRowContext(ctx, QUERY, user.Username).Scan(&userLogin.UserId, &userLogin.Username, &userLogin.Password)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return fmt.Errorf("login failed: incorrect user and password")
+			return 0, fmt.Errorf("login failed: incorrect user and password")
 		}
-		return fmt.Errorf("login failed: %v", err)
+		return 0, fmt.Errorf("login failed: %v", err)
 	}
 
 	errPass := bcrypt.CompareHashAndPassword([]byte(userLogin.Password), []byte(user.Password))
 	if errPass != nil {
-		return errors.New("login failed: incorrect password")
+		return 0, errors.New("login failed: incorrect password")
 	}
 
-	return nil
+	//#MENGEMBALIKAN ID YG AKAN DI SIMPAN DI JWT
+	return userLogin.UserId, nil
 
 }
