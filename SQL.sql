@@ -51,3 +51,11 @@ CREATE TABLE user_favorites (
 );
 
 select * from users;
+
+select * from user_favorites;
+
+INSERT INTO user_favorites (user_id, anime_id) VALUES
+                                                   (4, 1),  -- User 1 menyukai anime 1
+                                                   (4, 5),
+                                                   (4, 6);
+SELECT anime_id FROM anime_info;

@@ -8,6 +8,7 @@ import (
 	"insert_DM/domain/dto"
 	"insert_DM/repository"
 	"insert_DM/utils"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -34,6 +35,7 @@ func (service AnimeServiceImpl) GetAnimeById(ctx *fiber.Ctx) dto.WebRes {
 		}
 		return responses
 	}
+	log.Print("anime id", animeID)
 
 	tx, err := service.DB.Begin()
 	utils.PanicIfError(err)
@@ -129,7 +131,26 @@ func (service AnimeServiceImpl) GetAllAnime(ctx *fiber.Ctx) dto.WebRes {
 func (service AnimeServiceImpl) AddFavorite(ctx *fiber.Ctx) dto.WebRes {
 	var responses dto.WebRes
 
-	userID, _ := strconv.Atoi(ctx.Locals("userID").(string))
+	// TAKE TOKEN
+	token := ctx.Cookies("token")
+
+	claims := &cnf.JWTClaim{}
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(cnf.JWT_KEY), nil
+	})
+
+	// VERIVIKASI JWT
+	if err != nil || !tkn.Valid {
+		responses = dto.WebRes{
+			Code:   http.StatusUnauthorized,
+			Status: "Unauthorized",
+			Data:   "Invalid token",
+		}
+		return responses
+	}
+
+	// AMBIL USERID YG DI SIMPAN SAAT LOGIN DI JWT
+	userID := claims.UserID
 	animeID, err := strconv.Atoi(ctx.Params("anime_id"))
 	if err != nil {
 		responses = dto.WebRes{
@@ -139,6 +160,8 @@ func (service AnimeServiceImpl) AddFavorite(ctx *fiber.Ctx) dto.WebRes {
 		}
 		return responses
 	}
+
+	log.Printf("userid %v anime id %v", userID, animeID)
 
 	tx, err := service.DB.Begin()
 	utils.PanicIfError(err)
@@ -175,8 +198,26 @@ func (service AnimeServiceImpl) AddFavorite(ctx *fiber.Ctx) dto.WebRes {
 
 func (service AnimeServiceImpl) RemoveFavorite(ctx *fiber.Ctx) dto.WebRes {
 	var responses dto.WebRes
+	// TAKE TOKEN
+	token := ctx.Cookies("token")
 
-	userID, _ := strconv.Atoi(ctx.Locals("userID").(string))
+	claims := &cnf.JWTClaim{}
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(cnf.JWT_KEY), nil
+	})
+
+	// VERIVIKASI JWT
+	if err != nil || !tkn.Valid {
+		responses = dto.WebRes{
+			Code:   http.StatusUnauthorized,
+			Status: "Unauthorized",
+			Data:   "Invalid token",
+		}
+		return responses
+	}
+
+	// AMBIL USERID YG DI SIMPAN SAAT LOGIN DI JWT
+	userID := claims.UserID
 	animeID, err := strconv.Atoi(ctx.Params("anime_id"))
 	if err != nil {
 		responses = dto.WebRes{
@@ -186,6 +227,8 @@ func (service AnimeServiceImpl) RemoveFavorite(ctx *fiber.Ctx) dto.WebRes {
 		}
 		return responses
 	}
+
+	log.Printf("userid %v anime id %v", userID, animeID)
 
 	tx, err := service.DB.Begin()
 	utils.PanicIfError(err)
@@ -214,7 +257,7 @@ func (service AnimeServiceImpl) RemoveFavorite(ctx *fiber.Ctx) dto.WebRes {
 	responses = dto.WebRes{
 		Code:   http.StatusOK,
 		Status: "OK",
-		Data:   "Anime added to favorites",
+		Data:   "Anime Removed from favorites",
 	}
 
 	return responses

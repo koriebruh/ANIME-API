@@ -30,10 +30,10 @@ func main() {
 	r.Get("auth/user/logout", userController.Logout)
 
 	authorized := r.Group("/", cnf.JWTAuthMiddleware)
-	authorized.Get("/favorites", animeController.GetAllAnime)
-	authorized.Post("/favorites", animeController.GetAnimeById)
-	authorized.Post("/favorites/:anime_id", animeController.AddFavorite)
-	authorized.Delete("/favorites/:anime_id", animeController.RemoveFavorite)
+	authorized.Get("/favorites", animeController.GetAllAnime)                 // success
+	authorized.Get("/favorites/:anime_id", animeController.GetAnimeById)      // public tanpa  tokebn bisa adi akses
+	authorized.Post("/favorites/:anime_id", animeController.AddFavorite)      // success
+	authorized.Delete("/favorites/:anime_id", animeController.RemoveFavorite) // success
 
 	err := r.Listen(":" + cnf.GetConfig().Server.Port)
 	if err != nil {

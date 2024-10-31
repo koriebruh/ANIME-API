@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"insert_DM/domain"
+	"log"
 )
 
 type AnimeRepositoryImpl struct {
@@ -38,6 +39,7 @@ func (repo AnimeRepositoryImpl) GetAnimeById(ctx context.Context, tx *sql.Tx, an
 		}
 		return anime, fmt.Errorf("failed to fetch anime: %v", err)
 	}
+	log.Printf("data: %v and userid %v", anime, animeID)
 
 	return anime, nil
 }
@@ -83,9 +85,10 @@ func (repo AnimeRepositoryImpl) GetAllFavorite(ctx context.Context, tx *sql.Tx, 
 }
 
 func (repo AnimeRepositoryImpl) AddFavorite(ctx context.Context, tx *sql.Tx, userID int, animeID int) error {
+	log.Printf("userid %v and animeid %v", userID, animeID)
 
 	QUERY := "INSERT INTO user_favorites (user_id,anime_id) values (?,?)"
-	_, err := tx.QueryContext(ctx, QUERY,
+	_, err := tx.ExecContext(ctx, QUERY,
 		userID,
 		animeID,
 	)
